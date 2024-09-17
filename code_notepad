@@ -1,0 +1,100 @@
+import javax.swing.*;
+import java.awt.event.*;
+        import java.io.*;
+
+public class SimpleNotepad extends JFrame implements ActionListener {
+    JTextArea textArea;
+    JFrame frame;
+
+    public SimpleNotepad() {
+        // Criando a janela
+        frame = new JFrame("Notepad em Java");
+
+        // Criando a área de texto
+        textArea = new JTextArea();
+
+        // Criando uma barra de menu
+        JMenuBar menuBar = new JMenuBar();
+
+        // Criando menus
+        JMenu fileMenu = new JMenu("Arquivo");
+        JMenu editMenu = new JMenu("Editar");
+        JMenu helpMenu = new JMenu("Ajuda");
+
+        // Criando itens de menu para "Arquivo"
+        JMenuItem newFile = new JMenuItem("Novo");
+        JMenuItem openFile = new JMenuItem("Abrir");
+        JMenuItem saveFile = new JMenuItem("Salvar");
+        JMenuItem close = new JMenuItem("Fechar");
+
+        // Adicionando ActionListener para cada item
+        newFile.addActionListener(this);
+        openFile.addActionListener(this);
+        saveFile.addActionListener(this);
+        close.addActionListener(this);
+
+        // Adicionando itens ao menu "Arquivo"
+        fileMenu.add(newFile);
+        fileMenu.add(openFile);
+        fileMenu.add(saveFile);
+        fileMenu.add(close);
+
+        // Adicionando menus à barra de menu
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(helpMenu);
+
+        // Configurando a barra de menu para a janela
+        frame.setJMenuBar(menuBar);
+
+        // Adicionando a área de texto à janela
+        frame.add(new JScrollPane(textArea));
+
+        // Configurações da janela
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    // Método para capturar as ações dos menus
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+
+        switch (command) {
+            case "Novo":
+                textArea.setText("");
+                break;
+            case "Abrir":
+                JFileChooser fileChooser = new JFileChooser();
+                int openOption = fileChooser.showOpenDialog(null);
+                if (openOption == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        textArea.read(reader, null);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+                break;
+            case "Salvar":
+                JFileChooser saveFileChooser = new JFileChooser();
+                int saveOption = saveFileChooser.showSaveDialog(null);
+                if (saveOption == JFileChooser.APPROVE_OPTION) {
+                    File file = saveFileChooser.getSelectedFile();
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                        textArea.write(writer);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+                break;
+            case "Fechar":
+                frame.dispose();
+                break;
+        }
+    }
+
+    public static void main(String[] args) {
+        new SimpleNotepad();
+    }
+}
